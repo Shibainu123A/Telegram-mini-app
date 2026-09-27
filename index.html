@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GiveawayHub</title>
+
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --text: #172033;
+      --muted: #7b8497;
+      --primary: #6c5ce7;
+      --primary2: #8b7cf6;
+      --green: #20b26b;
+      --border: #e8ebf2;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding-bottom: 85px;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 520px;
+      margin: auto;
+      padding: 16px;
+    }
+
+    /* HEADER */
+
+    .top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    .profile {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+    }
+
+    .avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--primary2));
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .hello {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 3px;
+    }
+
+    .name {
+      font-size: 17px;
+      font-weight: 700;
+    }
+
+    .notification {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 19px;
+    }
+
+    /* BALANCE */
+
+    .balance-card {
+      background: linear-gradient(135deg, #6353dc, #8c7df5);
+      border-radius: 24px;
+      padding: 23px;
+      color: white;
+      margin-bottom: 16px;
+      box-shadow: 0 12px 30px rgba(108,92,231,.22);
+    }
+
+    .balance-label {
+      font-size: 13px;
+      opacity: .85;
+    }
+
+    .balance {
+      font-size: 34px;
+      font-weight: 800;
+      margin: 7px 0 18px;
+    }
+
+    .balance-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .ticket {
+      background: rgba(255,255,255,.16);
+      padding: 8px 12px;
+      border-radius: 12px;
+      font-size: 13px;
+    }
+
+    .withdraw-btn {
+      background: white;
+      color: var(--primary);
+      border: none;
+      padding: 10px 15px;
+      border-radius: 12px;
+      font-weight: 700;
+    }
+
+    /* QUICK STATS */
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3,1fr);
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .stat {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 17px;
+      padding: 15px 8px;
+      text-align: center;
+    }
+
+    .stat-icon {
+      font-size: 20px;
+      margin-bottom: 7px;
+    }
+
+    .stat-value {
+      font-size: 17px;
+      font-weight: 700;
+    }
+
+    .stat-title {
+      color: var(--muted);
+      font-size: 11px;
+      margin-top: 4px;
+    }
+
+    /* SECTION */
+
+    .section-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 21px 2px 11px;
+    }
+
+    .section-title h2 {
+      font-size: 18px;
+    }
+
+    .section-title span {
+      color: var(--primary);
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    /* GIVEAWAY */
+
+    .giveaway {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 18px;
+      margin-bottom: 12px;
+    }
+
+    .giveaway-top {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .gift {
+      width: 50px;
+      height: 50px;
+      border-radius: 15px;
+      background: #f0edff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 25px;
+    }
+
+    .giveaway h3 {
+      font-size: 16px;
+      margin-bottom: 4px;
+    }
+
+    .giveaway p {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .progress {
+      height: 8px;
+      background: #eceef5;
+      border-radius: 20px;
+      overflow: hidden;
+      margin: 16px 0 8px;
+    }
+
+    .progress-bar {
+      width: 68%;
+      height: 100%;
+      background: linear-gradient(90deg,var(--primary),var(--primary2));
+      border-radius: 20px;
+    }
+
+    .progress-info {
+      display: flex;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .primary-btn {
+      width: 100%;
+      border: none;
+      background: var(--primary);
+      color: white;
+      padding: 14px;
+      border-radius: 14px;
+      font-size: 14px;
+      font-weight: 700;
+      margin-top: 14px;
+    }
+
+    /* TASKS */
+
+    .task {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 17px;
+      padding: 14px;
+      margin-bottom: 9px;
+    }
+
+    .task-icon {
+      width: 43px;
+      height: 43px;
+      border-radius: 13px;
+      background: #f0edff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .task-info {
+      flex: 1;
+    }
+
+    .task-info h3 {
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .task-info p {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .task-btn {
+      border: none;
+      background: #eeeaff;
+      color: var(--primary);
+      padding: 9px 12px;
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    /* REFERRAL */
+
+    .referral {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 18px;
+    }
+
+    .referral h3 {
+      font-size: 16px;
+      margin-bottom: 7px;
+    }
+
+    .referral p {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .ref-box {
+      margin-top: 15px;
+      background: #f6f4ff;
+      border: 1px dashed #c7bfff;
+      border-radius: 13px;
+      padding: 12px;
+      font-size: 12px;
+      color: var(--primary);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* LEADERBOARD */
+
+    .leader {
+      display: flex;
+      align-items: center;
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 13px;
+      border-radius: 15px;
+      margin-bottom: 8px;
+    }
+
+    .rank {
+      width: 32px;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .leader-avatar {
+      width: 37px;
+      height: 37px;
+      border-radius: 50%;
+      background: #e9e6ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 10px;
+    }
+
+    .leader-name {
+      flex: 1;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .leader-score {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* BOTTOM NAV */
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      max-width: 520px;
+      margin: auto;
+      height: 70px;
+      background: rgba(255,255,255,.96);
+      border-top: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: repeat(4,1fr);
+      z-index: 100;
+    }
+
+    .nav-btn {
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      font-size: 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .nav-btn span {
+      font-size: 20px;
+    }
+
+    .nav-btn.active {
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    @media(max-width:350px) {
+      .app {
+        padding: 12px;
+      }
+
+      .balance {
+        font-size: 29px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <!-- HEADER -->
+
+  <div class="top">
+    <div class="profile">
+
+      <div class="avatar" id="avatar">G</div>
+
+      <div>
+        <div class="hello">Welcome back 👋</div>
+        <div class="name" id="userName">Guest User</div>
+      </div>
+
+    </div>
+
+    <div class="notification">🔔</div>
+  </div>
+
+
+  <!-- BALANCE -->
+
+  <div class="balance-card">
+
+    <div class="balance-label">
+      Total Balance
+    </div>
+
+    <div class="balance">
+      $<span id="balance">0.00</span>
+    </div>
+
+    <div class="balance-bottom">
+
+      <div class="ticket">
+        🎟️ <span id="tickets">0</span> Tickets
+      </div>
+
+      <button class="withdraw-btn" onclick="withdraw()">
+        Withdraw
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- STATS -->
+
+  <div class="stats">
+
+    <div class="stat">
+      <div class="stat-icon">🎯</div>
+      <div class="stat-value" id="tasks">0</div>
+      <div class="stat-title">Tasks</div>
+    </div>
+
+    <div class="stat">
+      <div class="stat-icon">👥</div>
+      <div class="stat-value" id="referrals">0</div>
+      <div class="stat-title">Referrals</div>
+    </div>
+
+    <div class="stat">
+      <div class="stat-icon">🏆</div>
+      <div class="stat-value">#--</div>
+      <div class="stat-title">Rank</div>
+    </div>
+
+  </div>
+
+
+  <!-- GIVEAWAY -->
+
+  <div class="section-title">
+    <h2>🎁 Live Giveaway</h2>
+    <span>View all</span>
+  </div>
+
+  <div class="giveaway">
+
+    <div class="giveaway-top">
+
+      <div class="gift">🎁</div>
+
+      <div>
+        <h3>Daily Ticket Giveaway</h3>
+        <p>Complete tasks and increase your rank.</p>
+      </div>
+
+    </div>
+
+    <div class="progress">
+      <div class="progress-bar"></div>
+    </div>
+
+    <div class="progress-info">
+      <span>68 participants</span>
+      <span>100 total</span>
+    </div>
+
+    <button class="primary-btn" onclick="openGiveaway()">
+      Enter Giveaway
+    </button>
+
+  </div>
+
+
+  <!-- TASKS -->
+
+  <div class="section-title">
+    <h2>🎯 Daily Tasks</h2>
+    <span>More tasks</span>
+  </div>
+
+  <div class="task">
+
+    <div class="task-icon">📺</div>
+
+    <div class="task-info">
+      <h3>Watch an Ad</h3>
+      <p>Earn 100 tickets</p>
+    </div>
+
+    <button class="task-btn" onclick="taskAlert()">
+      START
+    </button>
+
+  </div>
+
+
+  <div class="task">
+
+    <div class="task-icon">📢</div>
+
+    <div class="task-info">
+      <h3>Join Community</h3>
+      <p>Earn reward</p>
+    </div>
+
+    <button class="task-btn" onclick="taskAlert()">
+      JOIN
+    </button>
+
+  </div>
+
+
+  <div class="task">
+
+    <div class="task-icon">👥</div>
+
+    <div class="task-info">
+      <h3>Invite a Friend</h3>
+      <p>Earn referral rewards</p>
+    </div>
+
+    <button class="task-btn" onclick="shareReferral()">
+      INVITE
+    </button>
+
+  </div>
+
+
+  <!-- REFERRAL -->
+
+  <div class="section-title">
+    <h2>👥 Referral Program</h2>
+  </div>
+
+  <div class="referral">
+
+    <h3>Invite friends & earn 🎁</h3>
+
+    <p>
+      Share your referral link with friends.
+      When they join and complete eligible tasks,
+      you can receive referral rewards.
+    </p>
+
+    <div class="ref-box" id="refLink">
+      Generating referral link...
+    </div>
+
+    <button class="primary-btn" onclick="shareReferral()">
+      🚀 Share Referral Link
+    </button>
+
+  </div>
+
+
+  <!-- LEADERBOARD -->
+
+  <div class="section-title">
+    <h2>🏆 Leaderboard</h2>
+    <span>Top users</span>
+  </div>
+
+  <div class="leader">
+    <div class="rank">1</div>
+    <div class="leader-avatar">🥇</div>
+    <div class="leader-name">Top Player</div>
+    <div class="leader-score">1,250 🎟️</div>
+  </div>
+
+  <div class="leader">
+    <div class="rank">2</div>
+    <div class="leader-avatar">🥈</div>
+    <div class="leader-name">Lucky User</div>
+    <div class="leader-score">1,080 🎟️</div>
+  </div>
+
+  <div class="leader">
+    <div class="rank">3</div>
+    <div class="leader-avatar">🥉</div>
+    <div class="leader-name">Winner</div>
+    <div class="leader-score">920 🎟️</div>
+  </div>
+
+</div>
+
+
+<!-- BOTTOM NAV -->
+
+<div class="bottom-nav">
+
+  <button class="nav-btn active" onclick="home()">
+    <span>🏠</span>
+    Home
+  </button>
+
+  <button class="nav-btn" onclick="tasksPage()">
+    <span>🎯</span>
+    Tasks
+  </button>
+
+  <button class="nav-btn" onclick="referralPage()">
+    <span>👥</span>
+    Referral
+  </button>
+
+  <button class="nav-btn" onclick="profilePage()">
+    <span>👤</span>
+    Profile
+  </button>
+
+</div>
+
+
+<script>
+
+  const tg = window.Telegram.WebApp;
+
+  tg.ready();
+  tg.expand();
+
+
+  /* TELEGRAM USER */
+
+  const user = tg.initDataUnsafe?.user;
+
+  if (user) {
+
+    const firstName = user.first_name || "User";
+    const lastName = user.last_name || "";
+
+    const fullName =
+      `${firstName} ${lastName}`.trim();
+
+    document.getElementById("userName")
+      .textContent = fullName;
+
+    document.getElementById("avatar")
+      .textContent =
+      firstName.charAt(0).toUpperCase();
+
+    const referralLink =
+      `https://t.me/YOUR_BOT_USERNAME?start=ref_${user.id}`;
+
+    document.getElementById("refLink")
+      .textContent = referralLink;
+
+  } else {
+
+    document.getElementById("userName")
+      .textContent = "Telegram User";
+
+    document.getElementById("refLink")
+      .textContent = "Open this app inside Telegram";
+
+  }
+
+
+  /* BUTTONS */
+
+  function withdraw() {
+
+    tg.showAlert(
+      "Withdrawal system will be connected to the backend."
+    );
+
+  }
+
+
+  function openGiveaway() {
+
+    tg.showAlert(
+      "Giveaway entry system will be connected next."
+    );
+
+  }
+
+
+  function taskAlert() {
+
+    tg.showAlert(
+      "Task system will be connected next."
+    );
+
+  }
+
+
+  function shareReferral() {
+
+    if (!user) {
+
+      tg.showAlert(
+        "Please open this app inside Telegram."
+      );
+
+      return;
+    }
+
+    const link =
+      `https://t.me/YOUR_BOT_USERNAME?start=ref_${user.id}`;
+
+    const text =
+      encodeURIComponent(
+        "🎁 Join this Telegram Mini App and start earning rewards!"
+      );
+
+    tg.openTelegramLink(
+      `https://t.me/share/url?url=${encodeURIComponent(link)}&text=${text}`
+    );
+
+  }
+
+
+  function home() {
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+
+  }
+
+
+  function tasksPage() {
+
+    document.querySelector(".section-title:nth-of-type(2)")
+      ?.scrollIntoView({
+        behavior: "smooth"
+      });
+
+  }
+
+
+  function referralPage() {
+
+    document.querySelector(".referral")
+      ?.scrollIntoView({
+        behavior: "smooth"
+      });
+
+  }
+
+
+  function profilePage() {
+
+    document.querySelector(".top")
+      ?.scrollIntoView({
+        behavior: "smooth"
+      });
+
+  }
+
+</script>
+
+</body>
+  </html>
